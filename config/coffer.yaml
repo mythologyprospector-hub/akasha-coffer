@@ -1,0 +1,30 @@
+coffer:
+  name: Akasha Coffer
+  steward: James Earl Stambaugh III
+  philosophy: >
+    A truthful local treasury playground for Akasha. This system tracks support,
+    allocation, and resource flow without pretending to be a bank or a live
+    wallet controller.
+
+support_channels:
+  metamask:
+    label: MetaMask
+    address: "0x185325DB018e6ECBb92Bf0443ABFBbB3a07cE713"
+    network: ethereum
+    purpose: "crypto support address for Akasha-related contributions"
+
+  buymeacoffee:
+    label: Buy Me a Coffee
+    url: "https://buymeacoffee.com/Thegreatoleander"
+    purpose: "direct support page for the project and creator"
+
+allocation_buckets:
+  operations: 40
+  growth: 25
+  reserve: 20
+  playground: 10
+  mercy: 5
+
+display:
+  accent: gold
+  theme: alabaster

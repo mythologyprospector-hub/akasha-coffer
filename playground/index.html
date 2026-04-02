@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Akasha Coffer Playground</title>
+<style>
+  :root{
+    --bg:#f6f0e3;
+    --card:#fffaf0;
+    --ink:#2d2418;
+    --muted:#6c5b45;
+    --gold:#b8892d;
+    --line:#d9c7a2;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Georgia, "Times New Roman", serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .wrap{
+    max-width:960px;
+    margin:0 auto;
+    padding:24px;
+  }
+  .hero, .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.06);
+    margin-bottom:18px;
+  }
+  h1,h2{margin-top:0}
+  .muted{color:var(--muted)}
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:16px;
+  }
+  .pill{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:999px;
+    background:#f0e1bc;
+    color:#4f3f20;
+    margin-right:6px;
+    margin-bottom:6px;
+  }
+  code{
+    background:#f4ead4;
+    padding:2px 6px;
+    border-radius:6px;
+  }
+  a{color:#7b5a17}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Akasha Coffer</h1>
+      <p class="muted">
+        A treasury playground for Akasha — a place to track support, reserves, expenses,
+        and the quiet metabolism of a creative system.
+      </p>
+      <div>
+        <span class="pill">operations</span>
+        <span class="pill">growth</span>
+        <span class="pill">reserve</span>
+        <span class="pill">playground</span>
+        <span class="pill">mercy</span>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>MetaMask</h2>
+        <p><code>0x185325DB018e6ECBb92Bf0443ABFBbB3a07cE713</code></p>
+      </div>
+
+      <div class="card">
+        <h2>Buy Me a Coffee</h2>
+        <p><a href="https://buymeacoffee.com/Thegreatoleander">buymeacoffee.com/Thegreatoleander</a></p>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>What this is</h2>
+      <p>
+        This is not a live banking app. It is a local Akasha treasury playground:
+        a truthful place to record support, watch flow, and think clearly about what
+        sustains the happy place.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>CLI</h2>
+      <p>Use the coffer CLI from the repo root:</p>
+      <pre><code>python cli/coffer.py status
+python cli/coffer.py add-income --source "buymeacoffee" --amount 5 --note "test"
+python cli/coffer.py add-expense --category "api" --amount 20 --note "monthly cost"
+python cli/coffer.py snapshot --label "after-support-wave"</code></pre>
+    </section>
+  </div>
+</body>
+</html>

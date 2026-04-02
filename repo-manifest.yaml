@@ -1,0 +1,53 @@
+repo:
+  name: akasha-coffer
+  ecosystem: akasha
+  version: 0.1.0
+  status: active
+
+engine:
+  family: treasury
+  class: treasury_engine
+  role: resource_tracking_and_allocation
+
+identity:
+  role: engine
+  layer: metabolism
+  description: >
+    Treasury and resource-tracking engine for the Akasha constellation.
+    Responsible for recording support channels, income, expenses, reserves,
+    and bucket allocation across the wider system.
+
+ownership:
+  steward: human
+  approval_required: true
+
+interfaces:
+  consumes:
+    - support_events
+    - donation_records
+    - gig_income_records
+    - expense_entries
+    - allocation_rules
+    - treasury_configuration
+  produces:
+    - income_ledger_entries
+    - expense_ledger_entries
+    - reserve_snapshots
+    - treasury_status_views
+    - allocation_reports
+
+capabilities:
+  - income_tracking
+  - expense_tracking
+  - reserve_tracking
+  - treasury_status_reporting
+  - bucket_allocation
+  - support_channel_registry
+
+alignment:
+  axioms_required: true
+  canonical_structure: true
+  interpretation_free_core: true
+
+depends_on:
+  - akasha-suite
