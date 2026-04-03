@@ -1,2 +1,6 @@
 reserves:
-  snapshots: []
+  snapshots:
+  - timestamp: '2026-04-02T21:33:14+00:00'
+    label: initial
+    balance: 3.0
+    note: ''

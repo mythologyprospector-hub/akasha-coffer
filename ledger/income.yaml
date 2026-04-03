@@ -1,1 +1,6 @@
-income: []
+income:
+- timestamp: '2026-04-02T21:33:13+00:00'
+  source: buymeacoffee
+  amount: 5.0
+  currency: USD
+  note: test seed

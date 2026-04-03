@@ -1,0 +1,92 @@
+{
+  "generated_at": "2026-04-02T23:20:02+00:00",
+  "config": {
+    "coffer": {
+      "name": "Akasha Coffer",
+      "steward": "James Earl Stambaugh III",
+      "philosophy": "A truthful local treasury playground for Akasha. This system tracks support, allocation, and resource flow without pretending to be a bank or a live wallet controller.\n"
+    },
+    "support_channels": {
+      "metamask": {
+        "label": "MetaMask",
+        "address": "0x185325DB018e6ECBb92Bf0443ABFBbB3a07cE713",
+        "network": "ethereum",
+        "purpose": "crypto support address for Akasha-related contributions"
+      },
+      "buymeacoffee": {
+        "label": "Buy Me a Coffee",
+        "url": "https://buymeacoffee.com/Thegreatoleander",
+        "purpose": "direct support page for the project and creator"
+      }
+    },
+    "allocation_buckets": {
+      "operations": 40,
+      "growth": 25,
+      "reserve": 20,
+      "playground": 10,
+      "mercy": 5
+    },
+    "display": {
+      "accent": "gold",
+      "theme": "alabaster"
+    }
+  },
+  "totals": {
+    "income": 5.0,
+    "expenses": 2.0,
+    "balance": 3.0
+  },
+  "allocation_preview": [
+    {
+      "bucket": "operations",
+      "percent": 40.0,
+      "amount": 1.2
+    },
+    {
+      "bucket": "growth",
+      "percent": 25.0,
+      "amount": 0.75
+    },
+    {
+      "bucket": "reserve",
+      "percent": 20.0,
+      "amount": 0.6
+    },
+    {
+      "bucket": "playground",
+      "percent": 10.0,
+      "amount": 0.3
+    },
+    {
+      "bucket": "mercy",
+      "percent": 5.0,
+      "amount": 0.15
+    }
+  ],
+  "income": [
+    {
+      "timestamp": "2026-04-02T21:33:13+00:00",
+      "source": "buymeacoffee",
+      "amount": 5.0,
+      "currency": "USD",
+      "note": "test seed"
+    }
+  ],
+  "expenses": [
+    {
+      "timestamp": "2026-04-02T21:33:14+00:00",
+      "category": "api",
+      "amount": 2.0,
+      "currency": "USD",
+      "note": "playground test"
+    }
+  ],
+  "reserves": [
+    {
+      "timestamp": "2026-04-02T21:33:14+00:00",
+      "label": "initial",
+      "balance": 3.0,
+      "note": ""
+    }
+  ]
+}

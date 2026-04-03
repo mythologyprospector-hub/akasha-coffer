@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -10,191 +11,271 @@ from typing import Any
 try:
     import yaml
 except ImportError as exc:
-    raise SystemExit(
-        "PyYAML is required. Install it with: pip install pyyaml"
-    ) from exc
+    raise SystemExit("Install PyYAML: pip install pyyaml") from exc
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
 CONFIG_PATH = ROOT / "config" / "coffer.yaml"
+
 INCOME_PATH = ROOT / "ledger" / "income.yaml"
 EXPENSE_PATH = ROOT / "ledger" / "expenses.yaml"
 RESERVE_PATH = ROOT / "ledger" / "reserves.yaml"
 
+EXPORT_DIR = ROOT / "exports"
+EXPORT_PATH = EXPORT_DIR / "coffer_status.json"
 
-def now_iso() -> str:
+
+def now():
     return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
 
-def load_yaml(path: Path) -> dict[str, Any]:
+def load_yaml(path: Path):
     if not path.exists():
         return {}
-    data = yaml.safe_load(path.read_text(encoding="utf-8"))
+    data = yaml.safe_load(path.read_text())
     return data or {}
 
 
-def save_yaml(path: Path, data: dict[str, Any]) -> None:
+def save_yaml(path: Path, data: dict):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+    path.write_text(yaml.safe_dump(data, sort_keys=False))
 
 
-def load_config() -> dict[str, Any]:
+def load_config():
     return load_yaml(CONFIG_PATH)
 
 
-def load_income() -> list[dict[str, Any]]:
+def load_income():
     return load_yaml(INCOME_PATH).get("income", [])
 
 
-def load_expenses() -> list[dict[str, Any]]:
+def load_expenses():
     return load_yaml(EXPENSE_PATH).get("expenses", [])
 
 
-def load_reserves() -> list[dict[str, Any]]:
+def load_reserves():
     return load_yaml(RESERVE_PATH).get("reserves", {}).get("snapshots", [])
 
 
-def save_income(items: list[dict[str, Any]]) -> None:
-    save_yaml(INCOME_PATH, {"income": items})
+def save_income(rows):
+    save_yaml(INCOME_PATH, {"income": rows})
 
 
-def save_expenses(items: list[dict[str, Any]]) -> None:
-    save_yaml(EXPENSE_PATH, {"expenses": items})
+def save_expenses(rows):
+    save_yaml(EXPENSE_PATH, {"expenses": rows})
 
 
-def save_reserves(items: list[dict[str, Any]]) -> None:
-    save_yaml(RESERVE_PATH, {"reserves": {"snapshots": items}})
+def save_reserves(rows):
+    save_yaml(RESERVE_PATH, {"reserves": {"snapshots": rows}})
 
 
-def total_amount(rows: list[dict[str, Any]]) -> float:
-    return round(sum(float(row.get("amount", 0)) for row in rows), 2)
+def total(rows):
+    return round(sum(float(x.get("amount", 0)) for x in rows), 2)
 
 
-def command_status(_: argparse.Namespace) -> None:
+def totals():
+    inc = total(load_income())
+    exp = total(load_expenses())
+    bal = round(inc - exp, 2)
+
+    return {"income": inc, "expenses": exp, "balance": bal}
+
+
+def allocation(balance, buckets):
+    out = []
+
+    for name, pct in buckets.items():
+        pct = float(pct)
+        amount = round(balance * (pct / 100), 2)
+
+        out.append(
+            {
+                "bucket": name,
+                "percent": pct,
+                "amount": amount,
+            }
+        )
+
+    return out
+
+
+def export_payload():
     config = load_config()
-    income = load_income()
-    expenses = load_expenses()
-    reserves = load_reserves()
+    inc = load_income()
+    exp = load_expenses()
+    res = load_reserves()
 
-    total_income = total_amount(income)
-    total_expenses = total_amount(expenses)
-    balance = round(total_income - total_expenses, 2)
+    t = totals()
+
+    buckets = config.get("allocation_buckets", {})
+
+    return {
+        "generated_at": now(),
+        "config": config,
+        "totals": t,
+        "allocation_preview": allocation(t["balance"], buckets),
+        "income": inc,
+        "expenses": exp,
+        "reserves": res,
+    }
+
+
+def command_status(_):
+
+    t = totals()
 
     print("==================================")
     print("         AKASHA COFFER")
     print("==================================")
-    print(f"Name:    {config.get('coffer', {}).get('name', 'Akasha Coffer')}")
-    print(f"Income:  {total_income:.2f}")
-    print(f"Expense: {total_expenses:.2f}")
-    print(f"Balance: {balance:.2f}")
-    print(f"Reserve snapshots: {len(reserves)}")
-    print()
 
-    channels = config.get("support_channels", {})
-    if channels:
-        print("Support Channels:")
-        for key, value in channels.items():
-            print(f"  - {key}: {value}")
-        print()
+    print(f"Income:  {t['income']:.2f}")
+    print(f"Expense: {t['expenses']:.2f}")
+    print(f"Balance: {t['balance']:.2f}")
 
-    buckets = config.get("allocation_buckets", {})
-    if buckets:
-        print("Allocation Buckets:")
-        for name, pct in buckets.items():
-            print(f"  - {name}: {pct}%")
 
-def command_add_income(args: argparse.Namespace) -> None:
-    income = load_income()
+def command_add_income(args):
+
+    rows = load_income()
+
     entry = {
-        "timestamp": now_iso(),
+        "timestamp": now(),
         "source": args.source,
         "amount": round(float(args.amount), 2),
         "currency": args.currency,
         "note": args.note,
     }
-    income.append(entry)
-    save_income(income)
-    print("Income entry added:")
+
+    rows.append(entry)
+
+    save_income(rows)
+
     print(json.dumps(entry, indent=2))
 
-def command_add_expense(args: argparse.Namespace) -> None:
-    expenses = load_expenses()
+
+def command_add_expense(args):
+
+    rows = load_expenses()
+
     entry = {
-        "timestamp": now_iso(),
+        "timestamp": now(),
         "category": args.category,
         "amount": round(float(args.amount), 2),
         "currency": args.currency,
         "note": args.note,
     }
-    expenses.append(entry)
-    save_expenses(expenses)
-    print("Expense entry added:")
+
+    rows.append(entry)
+
+    save_expenses(rows)
+
     print(json.dumps(entry, indent=2))
 
-def command_snapshot(args: argparse.Namespace) -> None:
-    income = total_amount(load_income())
-    expenses = total_amount(load_expenses())
-    balance = round(income - expenses, 2)
 
-    snapshots = load_reserves()
+def command_snapshot(args):
+
+    t = totals()
+
+    rows = load_reserves()
+
     entry = {
-        "timestamp": now_iso(),
+        "timestamp": now(),
         "label": args.label,
-        "balance": balance,
+        "balance": t["balance"],
         "note": args.note,
     }
-    snapshots.append(entry)
-    save_reserves(snapshots)
-    print("Reserve snapshot added:")
+
+    rows.append(entry)
+
+    save_reserves(rows)
+
     print(json.dumps(entry, indent=2))
 
-def command_dump(_: argparse.Namespace) -> None:
-    payload = {
-        "config": load_config(),
-        "income": load_income(),
-        "expenses": load_expenses(),
-        "reserves": load_reserves(),
-    }
-    print(json.dumps(payload, indent=2))
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(
-        prog="coffer",
-        description="Akasha treasury playground CLI",
-    )
-    sub = parser.add_subparsers(dest="command", required=True)
+def command_export(_):
 
-    status = sub.add_parser("status", help="Show coffer status")
-    status.set_defaults(func=command_status)
+    payload = export_payload()
 
-    add_income = sub.add_parser("add-income", help="Add an income entry")
-    add_income.add_argument("--source", required=True)
-    add_income.add_argument("--amount", required=True, type=float)
-    add_income.add_argument("--currency", default="USD")
-    add_income.add_argument("--note", default="")
-    add_income.set_defaults(func=command_add_income)
+    EXPORT_DIR.mkdir(exist_ok=True)
 
-    add_expense = sub.add_parser("add-expense", help="Add an expense entry")
-    add_expense.add_argument("--category", required=True)
-    add_expense.add_argument("--amount", required=True, type=float)
-    add_expense.add_argument("--currency", default="USD")
-    add_expense.add_argument("--note", default="")
-    add_expense.set_defaults(func=command_add_expense)
+    EXPORT_PATH.write_text(json.dumps(payload, indent=2))
 
-    snapshot = sub.add_parser("snapshot", help="Record a reserve snapshot")
-    snapshot.add_argument("--label", default="manual")
-    snapshot.add_argument("--note", default="")
-    snapshot.set_defaults(func=command_snapshot)
+    print("Export written:", EXPORT_PATH)
 
-    dump = sub.add_parser("dump", help="Dump full coffer state as JSON")
-    dump.set_defaults(func=command_dump)
+
+def command_watch(_):
+
+    print("Watching ledger files...")
+    print("Press Ctrl+C to stop.\n")
+
+    last = 0
+
+    while True:
+
+        newest = max(
+            INCOME_PATH.stat().st_mtime,
+            EXPENSE_PATH.stat().st_mtime,
+            RESERVE_PATH.stat().st_mtime,
+        )
+
+        if newest > last:
+
+            payload = export_payload()
+
+            EXPORT_DIR.mkdir(exist_ok=True)
+
+            EXPORT_PATH.write_text(json.dumps(payload, indent=2))
+
+            print("Ledger change detected → export updated")
+
+            last = newest
+
+        time.sleep(2)
+
+
+def build_parser():
+
+    parser = argparse.ArgumentParser()
+
+    sub = parser.add_subparsers(dest="cmd", required=True)
+
+    s = sub.add_parser("status")
+    s.set_defaults(func=command_status)
+
+    i = sub.add_parser("add-income")
+    i.add_argument("--source", required=True)
+    i.add_argument("--amount", required=True)
+    i.add_argument("--currency", default="USD")
+    i.add_argument("--note", default="")
+    i.set_defaults(func=command_add_income)
+
+    e = sub.add_parser("add-expense")
+    e.add_argument("--category", required=True)
+    e.add_argument("--amount", required=True)
+    e.add_argument("--currency", default="USD")
+    e.add_argument("--note", default="")
+    e.set_defaults(func=command_add_expense)
+
+    r = sub.add_parser("snapshot")
+    r.add_argument("--label", default="manual")
+    r.add_argument("--note", default="")
+    r.set_defaults(func=command_snapshot)
+
+    ex = sub.add_parser("export")
+    ex.set_defaults(func=command_export)
+
+    w = sub.add_parser("watch")
+    w.set_defaults(func=command_watch)
 
     return parser
 
 
-def main() -> None:
+def main():
+
     parser = build_parser()
+
     args = parser.parse_args()
+
     args.func(args)
 
 

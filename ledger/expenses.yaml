@@ -1,1 +1,6 @@
-expenses: []
+expenses:
+- timestamp: '2026-04-02T21:33:14+00:00'
+  category: api
+  amount: 2.0
+  currency: USD
+  note: playground test

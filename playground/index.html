@@ -1,108 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Akasha Coffer Playground</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Akasha Coffer</title>
+
 <style>
-  :root{
-    --bg:#f6f0e3;
-    --card:#fffaf0;
-    --ink:#2d2418;
-    --muted:#6c5b45;
-    --gold:#b8892d;
-    --line:#d9c7a2;
-  }
-  *{box-sizing:border-box}
-  body{
+
+body{
     margin:0;
-    font-family:Georgia, "Times New Roman", serif;
-    background:var(--bg);
-    color:var(--ink);
-  }
-  .wrap{
-    max-width:960px;
-    margin:0 auto;
-    padding:24px;
-  }
-  .hero, .card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
+    font-family: Georgia, serif;
+    background:#f4efe6;
+    color:#2b2b2b;
+}
+
+.container{
+    max-width:600px;
+    margin:auto;
     padding:20px;
-    box-shadow:0 6px 20px rgba(0,0,0,0.06);
-    margin-bottom:18px;
-  }
-  h1,h2{margin-top:0}
-  .muted{color:var(--muted)}
-  .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
-    gap:16px;
-  }
-  .pill{
-    display:inline-block;
-    padding:6px 10px;
-    border-radius:999px;
-    background:#f0e1bc;
-    color:#4f3f20;
-    margin-right:6px;
-    margin-bottom:6px;
-  }
-  code{
-    background:#f4ead4;
-    padding:2px 6px;
-    border-radius:6px;
-  }
-  a{color:#7b5a17}
+}
+
+.card{
+    background:#ece6d9;
+    border-radius:16px;
+    padding:22px;
+    margin-bottom:20px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.05);
+    border:1px solid #d6cdbd;
+}
+
+h1{
+    margin:0;
+    font-size:36px;
+}
+
+h2{
+    margin:0 0 12px 0;
+}
+
+.value{
+    font-size:28px;
+    color:#a67c2e;
+    font-weight:bold;
+}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    padding:6px 0;
+    border-bottom:1px solid #d6cdbd;
+}
+
+.row:last-child{
+    border-bottom:none;
+}
+
+.small{
+    font-size:14px;
+    color:#6c5b45;
+}
+
+a{
+    color:#a67c2e;
+    text-decoration:none;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
 </style>
 </head>
+
+
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <h1>Akasha Coffer</h1>
-      <p class="muted">
-        A treasury playground for Akasha — a place to track support, reserves, expenses,
-        and the quiet metabolism of a creative system.
-      </p>
-      <div>
-        <span class="pill">operations</span>
-        <span class="pill">growth</span>
-        <span class="pill">reserve</span>
-        <span class="pill">playground</span>
-        <span class="pill">mercy</span>
-      </div>
-    </section>
 
-    <section class="grid">
-      <div class="card">
-        <h2>MetaMask</h2>
-        <p><code>0x185325DB018e6ECBb92Bf0443ABFBbB3a07cE713</code></p>
-      </div>
+<div class="container">
 
-      <div class="card">
-        <h2>Buy Me a Coffee</h2>
-        <p><a href="https://buymeacoffee.com/Thegreatoleander">buymeacoffee.com/Thegreatoleander</a></p>
-      </div>
-    </section>
+<div class="card">
+<h1>Akasha Coffer</h1>
+<div class="small">Treasury playground and resource ledger</div>
+</div>
 
-    <section class="card">
-      <h2>What this is</h2>
-      <p>
-        This is not a live banking app. It is a local Akasha treasury playground:
-        a truthful place to record support, watch flow, and think clearly about what
-        sustains the happy place.
-      </p>
-    </section>
 
-    <section class="card">
-      <h2>CLI</h2>
-      <p>Use the coffer CLI from the repo root:</p>
-      <pre><code>python cli/coffer.py status
-python cli/coffer.py add-income --source "buymeacoffee" --amount 5 --note "test"
-python cli/coffer.py add-expense --category "api" --amount 20 --note "monthly cost"
-python cli/coffer.py snapshot --label "after-support-wave"</code></pre>
-    </section>
-  </div>
+<div class="card">
+<h2>Balance</h2>
+<div class="value" id="balance">$0.00</div>
+</div>
+
+
+<div class="card">
+<h2>Income</h2>
+<div class="value" id="income">$0.00</div>
+</div>
+
+
+<div class="card">
+<h2>Expenses</h2>
+<div class="value" id="expenses">$0.00</div>
+</div>
+
+
+<div class="card">
+<h2>Allocation</h2>
+<div id="allocations"></div>
+</div>
+
+
+<div class="card">
+<h2>Recent Income</h2>
+<div id="recentIncome"></div>
+</div>
+
+
+<div class="card">
+<h2>Recent Expenses</h2>
+<div id="recentExpenses"></div>
+</div>
+
+
+<div class="card">
+<h2>MetaMask</h2>
+<div id="wallet"></div>
+</div>
+
+
+<div class="card">
+<h2>Buy Me A Coffee</h2>
+<div id="bmc"></div>
+</div>
+
+
+<div class="card">
+<h2>Last Update</h2>
+<div id="timestamp"></div>
+</div>
+
+
+</div>
+
+
+<script>
+
+async function loadData(){
+
+const res = await fetch("../exports/coffer_status.json",{cache:"no-store"});
+const data = await res.json();
+
+
+document.getElementById("balance").innerText =
+"$"+data.totals.balance.toFixed(2);
+
+document.getElementById("income").innerText =
+"$"+data.totals.income.toFixed(2);
+
+document.getElementById("expenses").innerText =
+"$"+data.totals.expenses.toFixed(2);
+
+
+
+let allocHTML="";
+
+data.allocation_preview.forEach(item=>{
+allocHTML+=`
+<div class="row">
+<span>${item.bucket}</span>
+<span>$${item.amount.toFixed(2)} (${item.percent}%)</span>
+</div>`;
+});
+
+document.getElementById("allocations").innerHTML=allocHTML;
+
+
+
+let incomeHTML="";
+
+data.income.slice().reverse().slice(0,3).forEach(entry=>{
+incomeHTML+=`
+<div class="row">
+<span>${entry.source}</span>
+<span>$${entry.amount.toFixed(2)}</span>
+</div>
+<div class="small">${entry.timestamp}</div>`;
+});
+
+document.getElementById("recentIncome").innerHTML=incomeHTML;
+
+
+
+let expenseHTML="";
+
+data.expenses.slice().reverse().slice(0,3).forEach(entry=>{
+expenseHTML+=`
+<div class="row">
+<span>${entry.category}</span>
+<span>$${entry.amount.toFixed(2)}</span>
+</div>
+<div class="small">${entry.timestamp}</div>`;
+});
+
+document.getElementById("recentExpenses").innerHTML=expenseHTML;
+
+
+
+const wallet=data.config.support_channels.metamask.address;
+
+document.getElementById("wallet").innerHTML=
+`<a href="https://etherscan.io/address/${wallet}" target="_blank">${wallet}</a>`;
+
+
+const bmc=data.config.support_channels.buymeacoffee.url;
+
+document.getElementById("bmc").innerHTML=
+`<a href="${bmc}" target="_blank">${bmc}</a>`;
+
+
+document.getElementById("timestamp").innerText=
+new Date(data.generated_at).toLocaleString();
+
+}
+
+loadData();
+
+/* auto refresh */
+
+setInterval(loadData,30000);
+
+</script>
+
+
 </body>
 </html>
