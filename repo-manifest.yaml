@@ -51,3 +51,11 @@ alignment:
 
 depends_on:
   - akasha-suite
+
+# ---- Canonical sections added by akasha-canon ----
+type: organ
+
+family: discovery
+
+role: coffer
+

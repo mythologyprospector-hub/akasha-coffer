@@ -1,0 +1,23 @@
+
+# ==================================
+# AKASHA_CANON_GUARD
+# Protect canonical files
+# ==================================
+!/README.md
+!/repo-manifest.yaml
+
+# ==================================
+# AKASHA_NOISE_FILTER
+# Generated artifacts
+# ==================================
+ARCHETYPE_COVERAGE_MAP.md
+*.log
+*.tmp
+*.cache
+.DS_Store
+
+# Discovery engine artifacts
+tree.txt
+output.txt
+*_run_output.txt
+
